@@ -7,11 +7,37 @@
     <parent>
         <groupId>dev.kovaliv</groupId>
         <artifactId>bom</artifactId>
-        <version>0.0.2</version>
+        <version>0.0.3</version>
     </parent>
 
     <artifactId>web-base</artifactId>
     <version>0.0.1</version>
+    <url>https://github.com/taraskovaliv/web-base</url>
+    <description>Base for web projects</description>
+
+    <scm>
+        <connection>scm:git:git://github.com/taraskovaliv/web-base.git</connection>
+        <developerConnection>scm:git:ssh://github.com:taraskovaliv/web-base.git</developerConnection>
+        <url>https://github.com/taraskovaliv/web-base/tree/master</url>
+    </scm>
+
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>https://github.com/taraskovaliv/bom/blob/master/LICENSE.md</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>Taras Kovaliv</name>
+            <email>taras@kovaliv.dev</email>
+        </developer>
+    </developers>
+
+    <properties>
+        <maven-remote-resources-plugin.version>3.2.0</maven-remote-resources-plugin.version>
+    </properties>
 
     <build>
         <plugins>
@@ -24,9 +50,10 @@
                     <target>${java.version}</target>
                 </configuration>
             </plugin>
+
             <plugin>
                 <artifactId>maven-remote-resources-plugin</artifactId>
-                <version>3.2.0</version>
+                <version>${maven-remote-resources-plugin.version}</version>
                 <executions>
                     <execution>
                         <goals>
@@ -40,6 +67,60 @@
                         <include>log4j2.xml</include>
                     </includes>
                 </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>${maven-source-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>${maven-javadoc-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.sonatype.central</groupId>
+                <artifactId>central-publishing-maven-plugin</artifactId>
+                <version>${central-publishing.version}</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <publishingServerId>central</publishingServerId>
+                    <autoPublish>true</autoPublish>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>${maven-gpg-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
