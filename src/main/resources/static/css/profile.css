@@ -1,0 +1,34 @@
+#social-div {
+    display: inline-block;
+    text-align: center;
+    margin: auto;
+    padding-bottom: 10px;
+    font-size: 40px;
+}
+#social-div li {
+    display: inline-block;
+}
+#social-div li a {
+    color: rgba(255, 255, 255, 0.6);
+    border-radius: 8px;
+    padding: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    margin-left: 10px;
+    transition: ease 0.3s;
+}
+#social-div li a:hover {
+    color: lightgreen;
+    border: 1px solid lightgreen;
+}
+.social:hover > li {
+    opacity: 0.5;
+}
+.social:hover > li:hover {
+    opacity: 1;
+}
+.projects li {
+    display: block;
+    margin-bottom: 5px;
+    padding: 20px;
+    border: dashed grey 1px;
+}
