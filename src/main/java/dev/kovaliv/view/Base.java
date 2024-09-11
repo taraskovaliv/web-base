@@ -23,11 +23,7 @@ import static java.util.Objects.requireNonNullElse;
 public class Base {
 
     public static String getHtml(HtmlTag htmlTag) {
-        return getDocType() + htmlTag.render();
-    }
-
-    public static String getDocType() {
-        return "<!DOCTYPE html>";
+        return "<!DOCTYPE html>" + htmlTag.render();
     }
 
     public static HeadTag getHead(Page page, List<? extends DomContent> additionalTags) {

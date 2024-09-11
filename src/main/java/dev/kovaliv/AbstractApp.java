@@ -11,7 +11,9 @@ import io.javalin.http.ContentType;
 import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
 import io.javalin.http.staticfiles.Location;
+import j2html.TagCreator;
 import j2html.tags.DomContent;
+import j2html.tags.specialized.NavTag;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.web.util.UriUtils;
@@ -45,13 +47,24 @@ public abstract class AbstractApp {
         return app;
     }
 
-    abstract void addEndpoints(Javalin app);
+    protected GetNav nav() {
+        return new GetNav() {
+            @Override
+            public NavTag nav(String lang, boolean isAuth) {
+                return TagCreator.nav();
+            }
+        };
+    }
 
-    abstract GetNav nav();
+    protected void addEndpoints(Javalin app) {}
 
-    abstract List<DomContent> defaultHeadAdditionalTags();
+    protected List<DomContent> defaultHeadAdditionalTags() {
+        return List.of();
+    }
 
-    abstract UserValidation userValidation();
+    protected UserValidation userValidation() {
+        return (ctx) -> false;
+    }
 
     @SneakyThrows
     private static void sitemap(Context ctx) {
