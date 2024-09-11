@@ -1,4 +1,4 @@
-package dev.kovaliv.services.sitemap;
+package dev.kovaliv.services;
 
 import io.javalin.http.Context;
 

@@ -1,6 +1,6 @@
 package dev.kovaliv.view;
 
-import dev.kovaliv.services.sitemap.UserValidation;
+import dev.kovaliv.services.UserValidation;
 import dev.kovaliv.view.def.Head;
 import dev.kovaliv.view.def.Nav;
 import io.javalin.http.Context;
@@ -153,7 +153,11 @@ public class Base {
     }
 
     public static ATag getEmail() {
-        return a(getenv("EMAIL")).withHref("mailto:" + getenv("EMAIL"));
+        String email = getenv("EMAIL");
+        if (email == null || email.isBlank()) {
+            email = "taras@kovaliv.dev";
+        }
+        return a(email).withHref("mailto:" + email);
     }
 
     private static PTag getMessage(String text) {

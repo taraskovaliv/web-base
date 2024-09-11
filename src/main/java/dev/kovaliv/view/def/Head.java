@@ -14,7 +14,7 @@ public class Head {
 
     public static void addAdditionalTags(Collection<DomContent> additionalTags) {
         if (additionalTags != null) {
-            additionalTags.addAll(additionalTags);
+            Head.additionalTags.addAll(additionalTags);
         }
     }
 }

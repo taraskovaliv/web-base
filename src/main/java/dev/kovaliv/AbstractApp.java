@@ -1,6 +1,6 @@
 package dev.kovaliv;
 
-import dev.kovaliv.services.sitemap.UserValidation;
+import dev.kovaliv.services.UserValidation;
 import dev.kovaliv.view.Base;
 import dev.kovaliv.view.BasicPages;
 import dev.kovaliv.view.def.GetNav;
@@ -58,6 +58,7 @@ public abstract class AbstractApp {
         ctx.result(Files.readAllBytes(Path.of("sitemap.xml")))
                 .contentType(ContentType.XML);
     }
+
     public static void success(Context ctx, String title, String message) {
         success(ctx, title, message, null, null);
     }
