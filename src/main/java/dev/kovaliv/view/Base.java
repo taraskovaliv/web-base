@@ -212,7 +212,8 @@ public class Base {
         return a(
                 img()
                         .withSrc("https://savelife.in.ua/wp-content/themes/savelife/assets/images/new-logo-black-ua.svg")
-                        .withAlt("SaveLife")
+                        .withAlt("SaveLife - Повернись живим!")
+                        .withStyle("width: 97px;height: 48px")
         ).withHref("https://link.kovaliv.dev/savelife").withClass("cba-logo");
     }
 

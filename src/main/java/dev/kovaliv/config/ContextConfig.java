@@ -22,6 +22,10 @@ public class ContextConfig {
         return context;
     }
 
+    public static boolean isCreatedContext() {
+        return context != null;
+    }
+
     private static void addDefaultBeans() {
         try {
             context.getBean(AbstractSitemapService.class);

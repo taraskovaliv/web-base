@@ -31,12 +31,10 @@
     $(document).ready(function () {
         $(window).trigger("resize");
         init_classic_menu();
-        init_lightbox();
         init_team();
         init_services();
         init_map();
         init_bg_video();
-        Splitting();
         init_shortcodes();
         init_tooltips();
         init_masonry();
