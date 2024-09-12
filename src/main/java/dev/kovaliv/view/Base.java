@@ -5,6 +5,7 @@ import dev.kovaliv.services.UserValidation;
 import dev.kovaliv.view.def.Head;
 import dev.kovaliv.view.def.Nav;
 import io.javalin.http.Context;
+import j2html.tags.ContainerTag;
 import j2html.tags.DomContent;
 import j2html.tags.specialized.*;
 import lombok.Getter;
@@ -14,6 +15,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static dev.kovaliv.view.BasicPages.isLink;
 import static dev.kovaliv.view.BasicPages.splitToTagsWithLink;
@@ -68,6 +71,7 @@ public class Base {
         private final boolean showToTop;
         private final boolean bottomMargin;
         private final boolean isAuth;
+        private final boolean isMobile;
 
         public Page(String title, String description, boolean showToTop, boolean bottomMargin, Context ctx) {
             this.title = title;
@@ -75,6 +79,7 @@ public class Base {
             this.showToTop = showToTop;
             this.bottomMargin = bottomMargin;
             this.isAuth = isAuth(ctx);
+            this.isMobile = isMobile(ctx);
         }
 
         public Page(String title, String description, Context ctx) {
@@ -83,6 +88,7 @@ public class Base {
             this.showToTop = false;
             this.bottomMargin = false;
             this.isAuth = isAuth(ctx);
+            this.isMobile = isMobile(ctx);
         }
 
         public Page(String title, Context ctx) {
@@ -91,10 +97,25 @@ public class Base {
             this.showToTop = false;
             this.bottomMargin = false;
             this.isAuth = isAuth(ctx);
+            this.isMobile = isMobile(ctx);
         }
 
         private boolean isAuth(Context ctx) {
             return userValidation.isAuthenticated(ctx);
+        }
+
+        private static boolean isMobile(Context ctx) {
+            boolean isMobile = "?1".equals(ctx.header("sec-ch-ua"));
+            if (!isMobile) {
+                List<String> mobileAgents = List.of("android", "webos", "iphone", "ipad", "ipod", "blackberry", "mobile", "opera mini");
+                String userAgent = Optional.ofNullable(ctx.userAgent()).orElse("").toLowerCase();
+                for (String mobileAgent : mobileAgents) {
+                    if (userAgent.contains(mobileAgent)) {
+                        return true;
+                    }
+                }
+            }
+            return isMobile;
         }
 
         public static void setUserValidation(UserValidation userValidation) {
@@ -132,6 +153,7 @@ public class Base {
     public static List<ScriptTag> getScripts() {
         return List.of(
                 script().withSrc("/js/jquery.min.js"),
+                script().withSrc("/js/params.js"),
                 script().withSrc("/js/jquery.easing.1.3.js"),
                 script().withSrc("/js/bootstrap.bundle.min.js"),
                 script().withSrc("/js/SmoothScroll.js"),
@@ -165,6 +187,10 @@ public class Base {
         ).withClasses("page-loader", "dark");
     }
 
+    public static HrTag divider() {
+        return hr().withClasses("mt-0", "mb-0", "white");
+    }
+
     public static ATag getEmail() {
         String email = getenv("EMAIL");
         if (email == null || email.isBlank()) {
@@ -175,6 +201,81 @@ public class Base {
 
     public static ScriptTag chartsJs() {
         return script().withSrc("https://cdn.jsdelivr.net/npm/chart.js");
+    }    public static DivTag getSaveLive() {
+        return div(
+                getSaveLiveLogo(),
+                getSaveLiveButton()
+        ).withClass("cba");
+    }
+
+    public static ATag getSaveLiveLogo() {
+        return a(
+                img()
+                        .withSrc("https://savelife.in.ua/wp-content/themes/savelife/assets/images/new-logo-black-ua.svg")
+                        .withAlt("SaveLife")
+        ).withHref("https://link.kovaliv.dev/savelife").withClass("cba-logo");
+    }
+
+    public static ATag getSaveLiveButton() {
+        return a(
+                span(
+                        new SvgTag().withStyle("transform: scale(0.95)")
+                                .attr("width", "19")
+                                .attr("height", "20")
+                                .attr("viewBox", "0 0 19 20")
+                                .attr("fill", "none")
+                                .attr("xmlns", "http://www.w3.org/2000/svg")
+                                .with(new PathTag()
+                                        .attr("d", "M16.6159 7.98068L9.25075 17.7431L1.8856 7.98068L1.88557 7.98064C0.522531 6.17413 0.756095 3.66224 2.42693 2.135L2.42702 2.13492C3.33721 1.30274 4.56887 0.898143 5.79348 1.02191L5.79514 1.02207C6.84144 1.12605 7.806 1.60704 8.52511 2.36538L9.25074 3.13058L9.97636 2.36538C10.6946 1.60793 11.667 1.12601 12.7069 1.02201L12.7075 1.02196C13.94 0.898051 15.164 1.30246 16.0745 2.13492L16.076 2.13631C17.7532 3.66341 17.9862 6.17312 16.6173 7.97881L16.6159 7.98068Z")
+                                        .attr("stroke", "white")
+                                        .attr("stroke-width", "2"))
+                ).withClass("icon"),
+                span("ПІДТРИМАТИ").withClass("text")
+        )
+                .withClass("btn-heart")
+                .withHref("https://link.kovaliv.dev/savelife_donate");
+    }
+
+    public static class PathTag extends ContainerTag<PathTag> {
+        public PathTag() {
+            super("path");
+        }
+    }
+
+    public static class SvgTag extends ContainerTag<SvgTag> {
+        public SvgTag() {
+            super("svg");
+        }
+    }
+
+    public static class TextTag extends ContainerTag<TextTag> {
+        public TextTag() {
+            super("text");
+        }
+    }
+
+    public static @NotNull String getLang(Context context) {
+        String lang = context.queryParam("lang");
+        if (lang == null) {
+            lang = context.sessionAttribute("lang");
+        } else {
+            context.sessionAttribute("lang", lang);
+        }
+        if (lang == null) {
+            AtomicReference<String> acceptLanguage = new AtomicReference<>();
+            context.headerMap().forEach((key, value) -> {
+                if (key.equalsIgnoreCase("accept-language")) {
+                    acceptLanguage.set(value);
+                }
+            });
+            if (acceptLanguage.get() != null) {
+                lang = acceptLanguage.get().substring(0, 2);
+            }
+        }
+        if (lang == null) {
+            lang = "uk";
+        }
+        return lang;
     }
 
     private static PTag getMessage(String text) {
@@ -197,14 +298,14 @@ public class Base {
     }
 
     public static HtmlTag getPage(String title, DomContent content, Context ctx) {
-        return getPage(new Page(title, ctx), getBasePageContainer(content));
+        return getPage(new Page(title, ctx), ctx, getBasePageContainer(content));
     }
 
-    public static HtmlTag getPage(Page page, DomContent... contents) {
-        return getPage(page, "uk", Collections.emptyList(), contents);
+    public static HtmlTag getPage(Page page, Context ctx, DomContent... contents) {
+        return getPage(page, ctx, Collections.emptyList(), contents);
     }
 
-    public static HtmlTag getPage(Page page, BasicHeader header, DomContent... contents) {
+    public static HtmlTag getPage(Page page, BasicHeader header, Context ctx, DomContent... contents) {
         DomContent[] heading = new DomContent[(header.button != null && header.button.path() != null && !header.button.path().isBlank()) ? 2 : 1];
         heading[0] = div(
                 div(
@@ -241,13 +342,11 @@ public class Base {
                 .withStyle("padding:0")
                 .withId("home");
         System.arraycopy(contents, 0, domContents, 1, contents.length);
-        return getPage(page, "uk", Collections.emptyList(), domContents);
+        return getPage(page, ctx, Collections.emptyList(), domContents);
     }
 
-    public static HtmlTag getPage(Page page, String lang, List<? extends DomContent> additionalHeaderTags, DomContent... contents) {
-        if (lang == null) {
-            lang = "uk";
-        }
+    public static HtmlTag getPage(Page page, Context ctx, List<? extends DomContent> additionalHeaderTags, DomContent... contents) {
+        String lang = getLang(ctx);
         List<DomContent> contentList = new ArrayList<>();
         List<DomContent> content = new ArrayList<>();
         content.add(Nav.getNav(lang, page.isAuth));

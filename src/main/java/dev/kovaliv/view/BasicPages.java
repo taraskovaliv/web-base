@@ -31,7 +31,7 @@ public class BasicPages {
         Base.Page page = new Base.Page(requireNonNullElse(title, "Успішно"), message, false, true, ctx);
         return Base.getPage(page,
                 new Base.BasicHeader(title, message, new BackButton(back_path, back_text)),
-                content);
+                ctx, content);
     }
 
     public static HtmlTag getError(Context ctx) {
@@ -43,7 +43,7 @@ public class BasicPages {
         Base.Page page = new Base.Page(requireNonNullElse(title, "Помилка"), error, false, true, ctx);
         return Base.getPage(page,
                 new Base.BasicHeader(title, "Помилка: " + error, new BackButton(back_path, back_text)),
-                div().withClasses("page-section", "bg-dark", "light-content"));
+                ctx, div().withClasses("page-section", "bg-dark", "light-content"));
     }
 
     private static PTag getDescription(String text) {

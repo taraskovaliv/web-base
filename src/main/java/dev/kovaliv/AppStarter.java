@@ -1,6 +1,7 @@
 package dev.kovaliv;
 
 import dev.kovaliv.services.sitemap.AbstractSitemapService;
+import dev.kovaliv.services.sitemap.DefaultSitemapService;
 import io.javalin.Javalin;
 import lombok.extern.log4j.Log4j2;
 
@@ -15,14 +16,16 @@ import static java.time.LocalDateTime.now;
 @Log4j2
 public class AppStarter {
 
+    public static final int DEFAULT_PORT = 8080;
+
     public static void start(AbstractApp app) {
-        start(app, 8080);
+        start(app, DEFAULT_PORT);
     }
 
-    public static void start(AbstractApp app, Integer defaultPort) {
+    public static void start(AbstractApp app, Integer port) {
         LocalDateTime start = now();
         Javalin javalin = app.javalin();
-        javalin.start(getenv("PORT") != null ? parseInt(getenv("PORT")) : defaultPort);
+        javalin.start(getenv("PORT") != null ? parseInt(getenv("PORT")) : port);
         log.info("App started in {} seconds", Duration.between(start, now()).getSeconds());
         start = now();
         boolean contextStarted = false;
@@ -43,5 +46,23 @@ public class AppStarter {
             System.exit(1);
         }
         context().getBean(AbstractSitemapService.class).createSitemap();
+    }
+
+    public static void startWithoutContext(AbstractApp app) {
+        startWithoutContext(app, DEFAULT_PORT);
+    }
+
+    public static void startWithoutContext(AbstractApp app, int port) {
+        startWithoutContext(app, port, null);
+    }
+
+    public static void startWithoutContext(AbstractApp app, int port, AbstractSitemapService sitemapService) {
+        Javalin javalin = app.javalin();
+        javalin.start(getenv("PORT") != null ? parseInt(getenv("PORT")) : port);
+        log.info("App started");
+        if (sitemapService == null) {
+            sitemapService = new DefaultSitemapService();
+        }
+        sitemapService.createSitemap();
     }
 }

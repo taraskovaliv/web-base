@@ -15,12 +15,15 @@ public abstract class AbstractBasicGetNav extends GetNav {
     public NavTag nav(String lang, boolean isAuth) {
         Logo logo = getLogo(lang);
         Map<String, String> menuItems = getMenuItems(lang, isAuth);
-        LiTag[] navItems = new LiTag[menuItems.size()];
+        LiTag[] navItems = new LiTag[menuItems.size() + (hasLangs() ? 1 : 0)];
         int i = 0;
         for (Map.Entry<String, String> entry : menuItems.entrySet()) {
             navItems[i++] = li(
                     a(entry.getKey()).withHref(entry.getValue()).withStyle("height: 85px; line-height: 85px")
             );
+        }
+        if (hasLangs()) {
+            navItems[i] = getLangMenu(lang);
         }
         return TagCreator.nav(
                 div(
@@ -44,9 +47,30 @@ public abstract class AbstractBasicGetNav extends GetNav {
         ).withClasses("main-nav", "dark", "transparent", "stick-fixed", "wow-menubar");
     }
 
-    public abstract Map<String, String> getMenuItems(String lang, boolean isAuth);
+    private static LiTag getLangMenu(String lang) {
+        return li(
+                a(
+                        span("en".equals(lang) ? "Eng " : "Укр "),
+                        i().withClass("mn-has-sub-icon")
+                )
+                        .withHref("#")
+                        .withClass("mn-has-sub"),
+                ul(
+                        li(a("Українська").attr("onclick", "addUrlParameter('lang', 'uk')")),
+                        li(a("English").attr("onclick", "addUrlParameter('lang', 'en')"))
+                ).withClass("mn-sub")
+        );
+    }
 
-    public abstract Logo getLogo(String lang);
+    protected Map<String, String> getMenuItems(String lang, boolean isAuth) {
+        return Map.of();
+    }
+
+    protected abstract Logo getLogo(String lang);
+
+    protected boolean hasLangs() {
+        return false;
+    }
 
     public record Logo(String src, String alt, String width, String height) {
         public Logo {
