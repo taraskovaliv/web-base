@@ -56,4 +56,4 @@ jobs:
           REPO_PASSWORD: ${{ secrets.CENTRAL_TOKEN_PASSWORD }}
           GH_PASSPHRASE: ${{ secrets.GPG_SIGNING_KEY_PASSWORD }}
         if: steps.increment-version.outputs.previous-version != steps.increment-version.outputs.new-version
-        run: mvn --settings .github/maven-settings.xml deploy
+        run: mvn --settings .github/maven-settings.xml deploy -P publish

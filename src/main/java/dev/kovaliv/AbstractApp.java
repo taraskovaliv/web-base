@@ -1,5 +1,6 @@
 package dev.kovaliv;
 
+import dev.kovaliv.services.DefaultUserValidation;
 import dev.kovaliv.services.UserValidation;
 import dev.kovaliv.view.Base;
 import dev.kovaliv.view.BasicPages;
@@ -35,10 +36,12 @@ import static java.util.Objects.requireNonNullElse;
 @Log4j2
 public abstract class AbstractApp {
 
+    private final UserValidation userValidation = userValidation();
+
     public Javalin javalin() {
         Nav.setNav(nav());
         Head.addAdditionalTags(defaultHeadAdditionalTags());
-        Base.Page.setUserValidation(userValidation());
+        Base.Page.setUserValidation(userValidation);
         Javalin app = Javalin.create(conf -> conf.staticFiles.add("/static", Location.CLASSPATH))
                 .get("/error", AbstractApp::error)
                 .get("/success", AbstractApp::success)
@@ -56,14 +59,22 @@ public abstract class AbstractApp {
         };
     }
 
-    protected void addEndpoints(Javalin app) {}
+    protected abstract void addEndpoints(Javalin app);
 
     protected List<DomContent> defaultHeadAdditionalTags() {
         return List.of();
     }
 
     protected UserValidation userValidation() {
-        return (ctx) -> false;
+        return new DefaultUserValidation();
+    }
+
+    protected boolean authenticate(Context ctx) {
+        return userValidation.authenticate(ctx);
+    }
+
+    protected boolean isAuthenticated(Context ctx) {
+        return userValidation.isAuthenticated(ctx);
     }
 
     @SneakyThrows
@@ -89,7 +100,7 @@ public abstract class AbstractApp {
         ctx.redirect("/success");
     }
 
-    private static void success(Context ctx) {
+    protected static void success(Context ctx) {
         ctx.html(getHtml(getSuccess(ctx)));
         ctx.sessionAttribute("title", null);
         ctx.sessionAttribute("message", null);
@@ -119,7 +130,7 @@ public abstract class AbstractApp {
         ctx.redirect("/error");
     }
 
-    private static void error(Context ctx) {
+    protected static void error(Context ctx) {
         ctx.html(getHtml(getError(ctx)));
         ctx.sessionAttribute("title", null);
         ctx.sessionAttribute("error", null);

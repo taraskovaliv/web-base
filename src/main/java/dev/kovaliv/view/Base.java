@@ -1,5 +1,6 @@
 package dev.kovaliv.view;
 
+import dev.kovaliv.services.DefaultUserValidation;
 import dev.kovaliv.services.UserValidation;
 import dev.kovaliv.view.def.Head;
 import dev.kovaliv.view.def.Nav;
@@ -61,7 +62,7 @@ public class Base {
     @Getter
     @Setter
     public static final class Page {
-        private static UserValidation userValidation = ctx -> false;
+        private static UserValidation userValidation = new DefaultUserValidation();
         private final String title;
         private final String description;
         private final boolean showToTop;
@@ -76,8 +77,24 @@ public class Base {
             this.isAuth = isAuth(ctx);
         }
 
+        public Page(String title, String description, Context ctx) {
+            this.title = title;
+            this.description = description;
+            this.showToTop = false;
+            this.bottomMargin = false;
+            this.isAuth = isAuth(ctx);
+        }
+
+        public Page(String title, Context ctx) {
+            this.title = title;
+            this.description = title;
+            this.showToTop = false;
+            this.bottomMargin = false;
+            this.isAuth = isAuth(ctx);
+        }
+
         private boolean isAuth(Context ctx) {
-            return userValidation.validate(ctx);
+            return userValidation.isAuthenticated(ctx);
         }
 
         public static void setUserValidation(UserValidation userValidation) {
@@ -156,6 +173,10 @@ public class Base {
         return a(email).withHref("mailto:" + email);
     }
 
+    public static ScriptTag chartsJs() {
+        return script().withSrc("https://cdn.jsdelivr.net/npm/chart.js");
+    }
+
     private static PTag getMessage(String text) {
         if (text == null) {
             return null;
@@ -165,6 +186,18 @@ public class Base {
             return p(tags.toArray(DomContent[]::new)).withClasses("hs-line-6", "opacity-075", "mb-20", "mb-xs-0");
         }
         return p(text).withClasses("hs-line-6", "opacity-075", "mb-20", "mb-xs-0");
+    }
+
+    public static SectionTag getBasePageContainer(DomContent... contents) {
+        return section(
+                div(
+                        div(contents).withClass("row")
+                ).withClasses("container", "relative")
+        ).withClasses("page-section", "bg-dark", "light-content");
+    }
+
+    public static HtmlTag getPage(String title, DomContent content, Context ctx) {
+        return getPage(new Page(title, ctx), getBasePageContainer(content));
     }
 
     public static HtmlTag getPage(Page page, DomContent... contents) {

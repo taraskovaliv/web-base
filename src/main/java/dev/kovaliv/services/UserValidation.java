@@ -3,5 +3,8 @@ package dev.kovaliv.services;
 import io.javalin.http.Context;
 
 public interface UserValidation {
-    boolean validate(Context ctx);
+
+    boolean isAuthenticated(Context ctx);
+
+    boolean authenticate(Context ctx);
 }
