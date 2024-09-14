@@ -1,7 +1,6 @@
 package dev.kovaliv;
 
 import dev.kovaliv.services.sitemap.AbstractSitemapService;
-import dev.kovaliv.services.sitemap.DefaultSitemapService;
 import io.javalin.Javalin;
 import lombok.extern.log4j.Log4j2;
 
@@ -46,6 +45,7 @@ public class AppStarter {
             System.exit(1);
         }
         context().getBean(AbstractSitemapService.class).createSitemap();
+        context().getBean(AbstractSitemapService.class).createRobotTxt();
     }
 
     public static void startWithoutContext(AbstractApp app) {
@@ -61,7 +61,7 @@ public class AppStarter {
         javalin.start(getenv("PORT") != null ? parseInt(getenv("PORT")) : port);
         log.info("App started");
         if (sitemapService == null) {
-            sitemapService = new DefaultSitemapService();
+            sitemapService = new AbstractSitemapService.DefaultSitemapService();
         }
         sitemapService.createSitemap();
     }

@@ -1,12 +1,10 @@
 package dev.kovaliv.config;
 
 import dev.kovaliv.services.sitemap.AbstractSitemapService;
-import dev.kovaliv.services.sitemap.DefaultSitemapService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.StandardEnvironment;
 
 import java.util.List;
@@ -62,7 +60,7 @@ public class ContextConfig extends StandardEnvironment {
         try {
             context.getBean(AbstractSitemapService.class);
         } catch (NoSuchBeanDefinitionException e) {
-            context.registerBean(DefaultSitemapService.class);
+            context.registerBean(AbstractSitemapService.DefaultSitemapService.class);
         }
     }
 

@@ -15,6 +15,7 @@ import j2html.TagCreator;
 import j2html.tags.DomContent;
 import j2html.tags.specialized.NavTag;
 import lombok.SneakyThrows;
+import org.jetbrains.annotations.NotNull;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -31,7 +32,8 @@ public abstract class AbstractApp extends AbstractRoute {
         Javalin app = Javalin.create(conf -> conf.staticFiles.add("/static", Location.CLASSPATH))
                 .get("/error", AbstractApp::error)
                 .get("/success", AbstractApp::success)
-                .get("/sitemap.xml", AbstractApp::sitemap);
+                .get("/sitemap.xml", AbstractApp::sitemap)
+                .get("/robots.txt", AbstractApp::robotsTxt);
         addEndpoints(app);
         return app;
     }
@@ -65,5 +67,11 @@ public abstract class AbstractApp extends AbstractRoute {
     private static void sitemap(Context ctx) {
         ctx.result(Files.readAllBytes(Path.of("sitemap.xml")))
                 .contentType(ContentType.XML);
+    }
+
+    @SneakyThrows
+    private static void robotsTxt(@NotNull Context context) {
+        context.result(Files.readAllBytes(Path.of("robots.txt")))
+                .contentType(ContentType.TEXT_PLAIN);
     }
 }

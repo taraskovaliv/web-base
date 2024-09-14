@@ -1,75 +1,114 @@
 package dev.kovaliv.services.sitemap;
 
+import cz.jiripinkas.jsitemapgenerator.ChangeFreq;
+import cz.jiripinkas.jsitemapgenerator.Ping;
+import cz.jiripinkas.jsitemapgenerator.WebPage;
+import cz.jiripinkas.jsitemapgenerator.generator.SitemapGenerator;
+import cz.jiripinkas.jsitemapgenerator.robots.RobotsRule;
+import cz.jiripinkas.jsitemapgenerator.robots.RobotsTxtGenerator;
+import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-import java.io.File;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.Map;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.file.Paths;
+import java.util.*;
+
+import static cz.jiripinkas.jsitemapgenerator.Ping.SearchEngine.BING;
+import static cz.jiripinkas.jsitemapgenerator.Ping.SearchEngine.GOOGLE;
+import static java.lang.System.getenv;
 
 @Log4j2
 public abstract class AbstractSitemapService {
 
-    abstract protected Map<String, Double> getUrls();
+    public void createSitemap() {
+        try {
+            log.debug("Start creating sitemap");
+            createSitemapAndPing();
+            log.info("Sitemap created");
+        } catch (IOException e) {
+            log.warn("Error saving sitemap", e);
+        }
+    }
+
+    public void createRobotTxt() {
+        try {
+            log.debug("Start creating robots.txt");
+            createRobotTxtFile();
+            log.info("robots.txt created");
+        } catch (IOException e) {
+            log.warn("Error saving robots.txt", e);
+        }
+    }
+
+    private void createRobotTxtFile() throws FileNotFoundException {
+        RobotsTxtGenerator robotsTxtGenerator = RobotsTxtGenerator.of(getenv("HOST_URI"));
+        robotsTxtGenerator.addSitemap(getSitemapFilename());
+        robotsTxtGenerator.addRule(RobotsRule.builder().userAgentAll().allowAll().build());
+        disallowPaths().forEach(path -> robotsTxtGenerator.addRule(
+                RobotsRule.builder().userAgentAll().disallow(path).build()
+        ));
+
+        PrintWriter writer = new PrintWriter("robots.txt");
+        Arrays.stream(robotsTxtGenerator.constructRobotsTxt()).forEach(writer::println);
+        writer.close();
+    }
+
+    private void createSitemapAndPing() throws IOException {
+        Ping ping = Ping.builder()
+                .engines(GOOGLE, BING)
+                .build();
+
+        SitemapGenerator sitemapGenerator = SitemapGenerator.of(getenv("HOST_URI"))
+                .addPage(WebPage.builder().maxPriorityRoot().changeFreqNever().lastModNow().build());
+
+        for (Map.Entry<String, SMValue> smvalue : getUrls().entrySet()) {
+            sitemapGenerator.addPage(WebPage.builder()
+                    .name(smvalue.getKey())
+                    .priority(smvalue.getValue().getPriority())
+                    .changeFreq(smvalue.getValue().getFreq())
+                    .lastModNow()
+                    .build());
+        }
+
+        sitemapGenerator
+                .toFile(Paths.get(getSitemapFilename()))
+                .ping(ping)
+                .callOnSuccess(() -> log.info("Pinged Google and Bing!"))
+                .catchOnFailure(e -> log.warn("Could not ping Google and Bing: {}", e.getMessage()));
+    }
+
+    abstract protected Map<String, SMValue> getUrls();
+
+    protected List<String> disallowPaths() {
+        return new ArrayList<>();
+    }
 
     protected String getSitemapFilename() {
         return "sitemap.xml";
     }
 
-    public void createSitemap() {
-        try {
-            log.debug("Start creating sitemap");
-            saveSitemap(createSitemapDocument());
-            log.info("Sitemap created");
-        } catch (TransformerException | ParserConfigurationException e) {
-            log.warn("Error saving sitemap", e);
+    @Getter
+    public static class SMValue {
+        private final ChangeFreq freq;
+        private final double priority;
+
+        public SMValue(double priority) {
+            this.priority = priority;
+            this.freq = ChangeFreq.DAILY;
+        }
+
+        public SMValue(double priority, ChangeFreq freq) {
+            this.priority = priority;
+            this.freq = freq;
         }
     }
 
-    private Document createSitemapDocument() throws ParserConfigurationException {
-        Document sitemap = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
-        Element root = sitemap.createElement("urlset");
-        root.setAttribute("xmlns", "http://www.sitemaps.org/schemas/sitemap/0.9");
-        sitemap.appendChild(root);
-
-        for (Map.Entry<String, Double> url : getUrls().entrySet()) {
-            Element urlElement = sitemap.createElement("url");
-            root.appendChild(urlElement);
-
-            Element loc = sitemap.createElement("loc");
-            loc.setTextContent(url.getKey());
-            urlElement.appendChild(loc);
-
-            Element lastmod = sitemap.createElement("lastmod");
-            lastmod.setTextContent(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-            urlElement.appendChild(lastmod);
-
-            Element changefreq = sitemap.createElement("changefreq");
-            changefreq.setTextContent("daily");
-            urlElement.appendChild(changefreq);
-
-            Element priority = sitemap.createElement("priority");
-            priority.setTextContent(String.valueOf(url.getValue()));
-            urlElement.appendChild(priority);
+    public static class DefaultSitemapService extends AbstractSitemapService {
+        @Override
+        protected Map<String, SMValue> getUrls() {
+            return new HashMap<>();
         }
-
-        return sitemap;
-    }
-
-    private void saveSitemap(Document document) throws TransformerException {
-        DOMSource dom = new DOMSource(document);
-        Transformer transformer = TransformerFactory.newInstance().newTransformer();
-
-        StreamResult result = new StreamResult(new File(getSitemapFilename()));
-        transformer.transform(dom, result);
     }
 }
