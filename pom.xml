@@ -7,7 +7,7 @@
     <parent>
         <groupId>dev.kovaliv</groupId>
         <artifactId>bom</artifactId>
-        <version>0.0.8</version>
+        <version>0.0.9</version>
     </parent>
 
     <artifactId>web-base</artifactId>
@@ -35,9 +35,20 @@
         </developer>
     </developers>
 
-    <properties>
-        <maven-remote-resources-plugin.version>3.2.0</maven-remote-resources-plugin.version>
-    </properties>
+    <dependencies>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>${junit-jupiter-api.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>uk.org.webcompere</groupId>
+            <artifactId>system-stubs-jupiter</artifactId>
+            <version>${system-stubs-jupiter.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 
     <build>
         <plugins>

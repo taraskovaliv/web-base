@@ -1,4 +1,4 @@
-package dev.kovaliv.config;
+package dev.kovaliv.config.db;
 
 
 import com.zaxxer.hikari.HikariConfig;
@@ -7,6 +7,7 @@ import jakarta.persistence.EntityManagerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Profile;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
@@ -15,8 +16,10 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.sql.DataSource;
 
+import static dev.kovaliv.config.ContextConfig.DB_PROFILE;
 import static org.springframework.orm.jpa.vendor.Database.POSTGRESQL;
 
+@Profile(DB_PROFILE)
 @Configuration
 @EnableTransactionManagement
 @Import(DatabaseConfig.class)

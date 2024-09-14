@@ -3,6 +3,7 @@ package dev.kovaliv.view.def;
 import j2html.TagCreator;
 import j2html.tags.specialized.LiTag;
 import j2html.tags.specialized.NavTag;
+import lombok.Getter;
 
 import java.util.Map;
 
@@ -72,11 +73,25 @@ public abstract class AbstractBasicGetNav extends GetNav {
         return false;
     }
 
-    public record Logo(String src, String alt, String width, String height) {
-        public Logo {
+    @Getter
+    public static class Logo {
+        private final String src;
+        private final String alt;
+        private final String width;
+        private final String height;
+
+        public Logo(String src, String alt, String width, String height) {
             if (src == null || alt == null || width == null || height == null) {
                 throw new IllegalArgumentException("All fields must be not null");
             }
+            this.src = src;
+            this.alt = alt;
+            this.width = width;
+            this.height = height;
+        }
+
+        public Logo(String src, String alt) {
+            this(src, alt, "376", "74");
         }
     }
 }

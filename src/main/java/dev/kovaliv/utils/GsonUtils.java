@@ -1,4 +1,4 @@
-package dev.kovaliv.config;
+package dev.kovaliv.utils;
 
 import com.google.gson.*;
 
@@ -14,7 +14,7 @@ import java.time.LocalTime;
 import static com.google.gson.FieldNamingPolicy.LOWER_CASE_WITH_DASHES;
 import static java.time.format.DateTimeFormatter.*;
 
-public class GsonConfig {
+public class GsonUtils {
 
     private static Gson gson;
 
