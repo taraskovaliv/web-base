@@ -60,10 +60,6 @@ public abstract class AbstractSitemapService {
     }
 
     private void createSitemapAndPing() throws IOException, URISyntaxException {
-        Ping ping = Ping.builder()
-                .engines(GOOGLE, BING)
-                .build();
-
         String hostUri = getenv("HOST_URI");
         SitemapGenerator sitemapGenerator = SitemapGenerator.of(hostUri)
                 .addPage(WebPage.builder().maxPriorityRoot().changeFreqNever().lastModNow().build());
@@ -83,11 +79,19 @@ public abstract class AbstractSitemapService {
                     .build());
         }
 
-        sitemapGenerator
-                .toFile(Paths.get(getSitemapFilename()))
-                .ping(ping)
-                .callOnSuccess(() -> log.info("Pinged Google and Bing!"))
-                .catchOnFailure(e -> log.warn("Could not ping Google and Bing: {}", e.getMessage()));
+        sitemapGenerator.toFile(Paths.get(getSitemapFilename()));
+
+        new Thread(() -> {
+            Ping ping = Ping.builder()
+                    .engines(GOOGLE, BING)
+                    .build();
+            sitemapGenerator
+                    .ping(ping)
+                    .callOnSuccess(() -> log.info("Pinged Google and Bing!"))
+                    .catchOnFailure(e ->
+                            log.warn("Could not ping Google and Bing: {}", e.getMessage())
+                    );
+        }).start();
     }
 
     abstract protected Map<String, SMValue> getUrls();
