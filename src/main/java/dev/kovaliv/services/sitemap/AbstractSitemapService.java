@@ -12,11 +12,13 @@ import lombok.extern.log4j.Log4j2;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URISyntaxException;
 import java.nio.file.Paths;
 import java.util.*;
 
 import static cz.jiripinkas.jsitemapgenerator.Ping.SearchEngine.BING;
 import static cz.jiripinkas.jsitemapgenerator.Ping.SearchEngine.GOOGLE;
+import static dev.kovaliv.services.sitemap.StaticImages.getImagePaths;
 import static java.lang.System.getenv;
 
 @Log4j2
@@ -27,7 +29,7 @@ public abstract class AbstractSitemapService {
             log.debug("Start creating sitemap");
             createSitemapAndPing();
             log.info("Sitemap created");
-        } catch (IOException e) {
+        } catch (IOException | URISyntaxException e) {
             log.warn("Error saving sitemap", e);
         }
     }
@@ -55,13 +57,20 @@ public abstract class AbstractSitemapService {
         writer.close();
     }
 
-    private void createSitemapAndPing() throws IOException {
+    private void createSitemapAndPing() throws IOException, URISyntaxException {
         Ping ping = Ping.builder()
                 .engines(GOOGLE, BING)
                 .build();
 
-        SitemapGenerator sitemapGenerator = SitemapGenerator.of(getenv("HOST_URI"))
+        String hostUri = getenv("HOST_URI");
+        SitemapGenerator sitemapGenerator = SitemapGenerator.of(hostUri)
                 .addPage(WebPage.builder().maxPriorityRoot().changeFreqNever().lastModNow().build());
+        getImagePaths().forEach(path -> sitemapGenerator.addPage(WebPage.builder()
+                .name(path)
+                .priority(0.7)
+                .changeFreq(ChangeFreq.WEEKLY)
+                .lastModNow()
+                .build()));
 
         for (Map.Entry<String, SMValue> smvalue : getUrls().entrySet()) {
             sitemapGenerator.addPage(WebPage.builder()
