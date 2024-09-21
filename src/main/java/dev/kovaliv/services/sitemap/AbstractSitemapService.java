@@ -12,6 +12,7 @@ import lombok.extern.log4j.Log4j2;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
 import java.util.*;
@@ -71,6 +72,17 @@ public abstract class AbstractSitemapService {
                 .build()));
 
         for (Map.Entry<String, SMValue> smvalue : getUrls().entrySet()) {
+            try {
+                String url = smvalue.getKey();
+                if (!url.startsWith(hostUri)) {
+                    url = hostUri + url;
+                }
+                new URI(url);
+            } catch (URISyntaxException e) {
+                log.warn("Invalid URL: {}", smvalue.getKey());
+                continue;
+            }
+
             sitemapGenerator.addPage(WebPage.builder()
                     .name(smvalue.getKey())
                     .priority(smvalue.getValue().getPriority())
