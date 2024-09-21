@@ -18,7 +18,8 @@ import java.util.*;
 
 import static cz.jiripinkas.jsitemapgenerator.Ping.SearchEngine.BING;
 import static cz.jiripinkas.jsitemapgenerator.Ping.SearchEngine.GOOGLE;
-import static dev.kovaliv.services.sitemap.StaticImages.getImagePaths;
+import static dev.kovaliv.services.sitemap.StaticFiles.getImagePaths;
+import static dev.kovaliv.services.sitemap.StaticFiles.staticPathsRules;
 import static java.lang.System.getenv;
 
 @Log4j2
@@ -48,6 +49,7 @@ public abstract class AbstractSitemapService {
         RobotsTxtGenerator robotsTxtGenerator = RobotsTxtGenerator.of(getenv("HOST_URI"));
         robotsTxtGenerator.addSitemap(getSitemapFilename());
         robotsTxtGenerator.addRule(RobotsRule.builder().userAgentAll().allowAll().build());
+        staticPathsRules().forEach(robotsTxtGenerator::addRule);
         disallowPaths().forEach(path -> robotsTxtGenerator.addRule(
                 RobotsRule.builder().userAgentAll().disallow(path).build()
         ));
