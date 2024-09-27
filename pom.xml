@@ -11,7 +11,7 @@
     </parent>
 
     <artifactId>web-base</artifactId>
-    <version>0.4.6</version>
+    <version>0.4.7</version>
     <url>https://github.com/taraskovaliv/web-base</url>
     <description>Base for web projects</description>
 
