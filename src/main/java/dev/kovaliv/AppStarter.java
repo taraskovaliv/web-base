@@ -1,5 +1,7 @@
 package dev.kovaliv;
 
+import dev.kovaliv.config.ContextConfig;
+import dev.kovaliv.services.SlackService;
 import dev.kovaliv.services.sitemap.AbstractSitemapService;
 import io.javalin.Javalin;
 import lombok.extern.log4j.Log4j2;
@@ -8,14 +10,18 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 
 import static dev.kovaliv.config.ContextConfig.context;
+import static dev.kovaliv.view.Base.getDomain;
 import static java.lang.Integer.parseInt;
 import static java.lang.System.getenv;
 import static java.time.LocalDateTime.now;
+import static java.time.format.DateTimeFormatter.ofLocalizedDateTime;
+import static java.time.format.FormatStyle.MEDIUM;
 
 @Log4j2
 public class AppStarter {
 
     public static final int DEFAULT_PORT = 8080;
+    public static final String APPS_STARTUP_SLACK_CHANNEL = "apps-startup";
 
     public static void start(AbstractApp app) {
         start(app, DEFAULT_PORT);
@@ -46,6 +52,12 @@ public class AppStarter {
         }
         context().getBean(AbstractSitemapService.class).createSitemap();
         context().getBean(AbstractSitemapService.class).createRobotTxt();
+
+        ContextConfig.get(SlackService.class)
+                .ifPresent(s -> s.send(
+                        getDomain() + " started at " + LocalDateTime.now().format(ofLocalizedDateTime(MEDIUM)),
+                        APPS_STARTUP_SLACK_CHANNEL)
+                );
     }
 
     public static void startWithoutContext(AbstractApp app) {

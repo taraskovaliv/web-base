@@ -58,7 +58,7 @@ public class Base {
         return head(tags.toArray(DomContent[]::new));
     }
 
-    private static @NotNull String getDomain() {
+    public static @NotNull String getDomain() {
         return getenv("HOST_URI").replaceAll("https?://", "");
     }
 

@@ -3,11 +3,12 @@ package dev.kovaliv.config;
 import dev.kovaliv.services.sitemap.AbstractSitemapService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.StandardEnvironment;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.TimeZone;
 
 @Log4j2
@@ -16,11 +17,14 @@ public class ContextConfig extends StandardEnvironment {
     public static final String SCHEDULER_PROFILE = "scheduler";
     public static final String SENTRY_PROFILE = "sentry";
     public static final String REDIS_PROFILE = "redis";
+    public static final String SLACK_PROFILE = "slack";
 
     public static final String DEFAULT_TIMEZONE = "Kyiv/Europe";
-    private static AnnotationConfigApplicationContext context;
 
-    public synchronized static ApplicationContext context() {
+    private static AnnotationConfigApplicationContext context;
+    private static ConfigurableEnvironment env;
+
+    public synchronized static AnnotationConfigApplicationContext context() {
         if (context == null) {
             TimeZone.setDefault(TimeZone.getTimeZone(DEFAULT_TIMEZONE));
             context = new AnnotationConfigApplicationContext();
@@ -33,8 +37,27 @@ public class ContextConfig extends StandardEnvironment {
         return context;
     }
 
+    public synchronized static ConfigurableEnvironment env() {
+        if (env == null) {
+            env = context().getEnvironment();
+        }
+        return env;
+    }
+
     public static boolean isCreatedContext() {
         return context != null;
+    }
+
+    public static <T> Optional<T> get(Class<T> clazz) {
+        if (context == null) {
+            return Optional.empty();
+        } else {
+            try {
+                return Optional.of(context.getBean(clazz));
+            } catch (NoSuchBeanDefinitionException e) {
+                return Optional.empty();
+            }
+        }
     }
 
     private static void addProfiles() {
@@ -53,6 +76,10 @@ public class ContextConfig extends StandardEnvironment {
         if (isRedis(context)) {
             log.info("Redis profile is enabled");
             context.getEnvironment().addActiveProfile(REDIS_PROFILE);
+        }
+        if (isSlack(context)) {
+            log.info("Slack profile is enabled");
+            context.getEnvironment().addActiveProfile(SLACK_PROFILE);
         }
     }
 
@@ -93,6 +120,10 @@ public class ContextConfig extends StandardEnvironment {
             }
         }
         return true;
+    }
+
+    private static boolean isSlack(AnnotationConfigApplicationContext context) {
+        return propertyIsNotBlank(context, "slack.token");
     }
 
     private static boolean propertyIsNotBlank(AnnotationConfigApplicationContext context, String propertyName) {
