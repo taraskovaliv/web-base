@@ -8,6 +8,7 @@ import cz.jiripinkas.jsitemapgenerator.robots.RobotsRule;
 import cz.jiripinkas.jsitemapgenerator.robots.RobotsTxtGenerator;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.scheduling.annotation.Scheduled;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -25,6 +26,12 @@ import static java.lang.System.getenv;
 
 @Log4j2
 public abstract class AbstractSitemapService {
+
+    @Scheduled(cron = "0 0 4 * * *")
+    public void createSitemapAndRobotTxt() {
+        createSitemap();
+        createRobotTxt();
+    }
 
     public void createSitemap() {
         try {
