@@ -16,7 +16,11 @@ public class EmailService {
         new Thread(() -> {
             try {
                 Message message = new MimeMessage(getSession());
-                message.setFrom(new InternetAddress(System.getenv("EMAIL"), "Запитай мене. ASK ME."));
+                String emailName = System.getenv("EMAIL_NAME");
+                if (emailName == null || emailName.isEmpty()) {
+                    emailName = "KOVALIV.DEV";
+                }
+                message.setFrom(new InternetAddress(System.getenv("EMAIL"), emailName));
                 message.setRecipients(TO, InternetAddress.parse(to));
                 message.setSubject(subject);
                 message.setContent(html, "text/HTML; charset=UTF-8");
