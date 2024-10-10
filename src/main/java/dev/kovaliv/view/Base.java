@@ -307,6 +307,10 @@ public class Base {
     }
 
     public static HtmlTag getPage(Page page, BasicHeader header, Context ctx, DomContent... contents) {
+        return getPage(page, header, ctx, Collections.emptyList(), contents);
+    }
+
+    public static HtmlTag getPage(Page page, BasicHeader header, Context ctx, List<? extends DomContent> additionalHeaderTags, DomContent... contents) {
         DomContent[] heading = new DomContent[(header.button != null && header.button.path() != null && !header.button.path().isBlank()) ? 2 : 1];
         heading[0] = div(
                 div(
@@ -343,7 +347,7 @@ public class Base {
                 .withStyle("padding:0")
                 .withId("home");
         System.arraycopy(contents, 0, domContents, 1, contents.length);
-        return getPage(page, ctx, Collections.emptyList(), domContents);
+        return getPage(page, ctx, additionalHeaderTags, domContents);
     }
 
     public static HtmlTag getPage(Page page, Context ctx, List<? extends DomContent> additionalHeaderTags, DomContent... contents) {
