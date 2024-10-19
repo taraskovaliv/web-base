@@ -199,9 +199,28 @@ public class Base {
         return a(email).withHref("mailto:" + email);
     }
 
+    public static DomContent[] getHorizontalAd() {
+        String adClient = "ca-pub-3029870500249130";
+        return new DomContent[]{
+                script()
+                        .attr("src", "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=" + adClient)
+                        .attr("crossorigin", "anonymous")
+                        .attr("async"),
+                ins().withClass("adsbygoogle")
+                        .attr("style", "display:block")
+                        .attr("data-ad-client", adClient)
+                        .attr("data-ad-slot", "7650451464")
+                        .attr("data-ad-format", "auto")
+                        .attr("data-full-width-responsive", "true"),
+                script().withText("(adsbygoogle = window.adsbygoogle || []).push({});")
+        };
+    }
+
     public static ScriptTag chartsJs() {
         return script().withSrc("https://cdn.jsdelivr.net/npm/chart.js");
-    }    public static DivTag getSaveLive() {
+    }
+
+    public static DivTag getSaveLive() {
         return div(
                 getSaveLiveLogo(),
                 getSaveLiveButton()
