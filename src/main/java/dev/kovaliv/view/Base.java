@@ -26,8 +26,6 @@ import static java.util.Objects.requireNonNullElse;
 
 public class Base {
 
-    public static final String AD_CLIENT = "ca-pub-3029870500249130";
-
     public static String getHtml(HtmlTag htmlTag) {
         return "<!DOCTYPE html>" + htmlTag.render();
     }
@@ -199,37 +197,6 @@ public class Base {
             email = "taras@kovaliv.dev";
         }
         return a(email).withHref("mailto:" + email);
-    }
-
-    public static DomContent[] getHorizontalAd() {
-        return new DomContent[]{
-                script()
-                        .attr("src", "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=" + AD_CLIENT)
-                        .attr("crossorigin", "anonymous")
-                        .attr("async"),
-                ins().withClass("adsbygoogle")
-                        .attr("style", "display:block")
-                        .attr("data-ad-client", AD_CLIENT)
-                        .attr("data-ad-slot", "7650451464")
-                        .attr("data-ad-format", "auto")
-                        .attr("data-full-width-responsive", "true"),
-                script().withText("(adsbygoogle = window.adsbygoogle || []).push({});")
-        };
-    }
-
-    public static DomContent[] getHorizontalMultiplexAd() {
-        return new DomContent[]{
-                script()
-                        .attr("src", "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=" + AD_CLIENT)
-                        .attr("crossorigin", "anonymous")
-                        .attr("async"),
-                ins().withClass("adsbygoogle")
-                        .attr("style", "display:block")
-                        .attr("data-ad-client", AD_CLIENT)
-                        .attr("data-ad-slot", "2030760442")
-                        .attr("data-ad-format", "autorelaxed"),
-                script().withText("(adsbygoogle = window.adsbygoogle || []).push({});")
-        };
     }
 
     public static ScriptTag chartsJs() {
