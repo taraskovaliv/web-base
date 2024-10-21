@@ -15,14 +15,14 @@ public class AdViews {
         HORIZONTAL_MEDIA, HORIZONTAL_MULTIPLEX
     }
 
-    public static DomContent[] addAds(AdType type, DomContent... content) {
+    public static DomContent[] getWithAd(AdType type, DomContent... content) {
         int length = content.length;
         DomContent[] result = new DomContent[length + 3];
         System.arraycopy(content, 0, result, 0, length);
         result[length] = getGoogleAdScript();
         result[length + 1] = getAd(type);
         result[length + 2] = getPushAdScript();
-        return content;
+        return result;
     }
 
     private static InsTag getAd(AdType type) {
