@@ -18,6 +18,7 @@ public class ContextConfig extends StandardEnvironment {
     public static final String SENTRY_PROFILE = "sentry";
     public static final String REDIS_PROFILE = "redis";
     public static final String SLACK_PROFILE = "slack";
+    public static final String AI_PROFILE = "ai";
 
     public static final String DEFAULT_TIMEZONE = "Kyiv/Europe";
 
@@ -81,6 +82,10 @@ public class ContextConfig extends StandardEnvironment {
             log.info("Slack profile is enabled");
             context.getEnvironment().addActiveProfile(SLACK_PROFILE);
         }
+        if (isAI(context)) {
+            log.info("AI profile is enabled");
+            context.getEnvironment().addActiveProfile(AI_PROFILE);
+        }
     }
 
     private static void addDefaultBeans() {
@@ -124,6 +129,11 @@ public class ContextConfig extends StandardEnvironment {
 
     private static boolean isSlack(AnnotationConfigApplicationContext context) {
         return propertyIsNotBlank(context, "slack.token");
+    }
+
+    private static boolean isAI(AnnotationConfigApplicationContext context) {
+        return propertyIsNotBlank(context, "CLOUDFLARE_ACCOUNT_ID")
+                && propertyIsNotBlank(context, "CLOUDFLARE_AUTH_TOKEN");
     }
 
     private static boolean propertyIsNotBlank(AnnotationConfigApplicationContext context, String propertyName) {
