@@ -8,10 +8,11 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import static dev.kovaliv.cloudflare.models.TextGenerationModel.OPENCHAT_3_5_0106;
+import static dev.kovaliv.config.ContextConfig.AI_PROFILE;
 import static java.lang.System.getenv;
 
 @Service
-@Profile("AI_PROFILE")
+@Profile(AI_PROFILE)
 public class AIService {
     private static final CloudflareClient cloudflareClient = new CloudflareClient(
             getenv("CLOUDFLARE_ACCOUNT_ID"), getenv("CLOUDFLARE_AUTH_TOKEN")
