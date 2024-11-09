@@ -82,7 +82,9 @@ public class BasicPages {
                                 .replaceAll("<span>", "")
                                 .replaceAll("</span>", "");
                         String[] parts = tmp.split(link);
-                        newTags.add(span(parts[0]));
+                        if (parts.length > 0) {
+                            newTags.add(span(parts[0]));
+                        }
                         if (parts.length > 1) {
                             for (int i = 1; i < parts.length - 1; i++) {
                                 newTags.add(a(trimLink(link)).withHref(link));

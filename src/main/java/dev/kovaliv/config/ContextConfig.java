@@ -19,6 +19,7 @@ public class ContextConfig extends StandardEnvironment {
     public static final String REDIS_PROFILE = "redis";
     public static final String SLACK_PROFILE = "slack";
     public static final String AI_PROFILE = "ai";
+    public static final String R2_PROFILE = "r2";
 
     public static final String DEFAULT_TIMEZONE = "Kyiv/Europe";
 
@@ -86,6 +87,10 @@ public class ContextConfig extends StandardEnvironment {
             log.info("AI profile is enabled");
             context.getEnvironment().addActiveProfile(AI_PROFILE);
         }
+        if (isR2(context)) {
+            log.info("R2 profile is enabled");
+            context.getEnvironment().addActiveProfile(R2_PROFILE);
+        }
     }
 
     private static void addDefaultBeans() {
@@ -134,6 +139,12 @@ public class ContextConfig extends StandardEnvironment {
     private static boolean isAI(AnnotationConfigApplicationContext context) {
         return propertyIsNotBlank(context, "CLOUDFLARE_ACCOUNT_ID")
                 && propertyIsNotBlank(context, "CLOUDFLARE_AUTH_TOKEN");
+    }
+
+    private static boolean isR2(AnnotationConfigApplicationContext context) {
+        return propertyIsNotBlank(context, "R2_ACCOUNT_ID")
+                && propertyIsNotBlank(context, "R2_ACCESS_KEY")
+                && propertyIsNotBlank(context, "R2_SECRET_KEY");
     }
 
     private static boolean propertyIsNotBlank(AnnotationConfigApplicationContext context, String propertyName) {
