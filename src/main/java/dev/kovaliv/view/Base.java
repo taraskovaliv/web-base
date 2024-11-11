@@ -69,7 +69,7 @@ public class Base {
         private final String title;
         private final String description;
         private final boolean showToTop;
-        private final boolean bottomMargin;
+        private boolean bottomMargin;
         private final boolean isAuth;
         private final boolean isMobile;
 
@@ -329,7 +329,6 @@ public class Base {
                         ).withClasses("hs-line-7", "mb-20", "mb-xs-10")
                 ).withClasses("wow", "fadeInUpShort")
                         .attr("data-wow-delay", ".1s"),
-
                 div(
                         getMessage(header.message)
                 ).withClasses("wow", "fadeInUpShort")
@@ -357,6 +356,7 @@ public class Base {
                 .withStyle("padding:0")
                 .withId("home");
         System.arraycopy(contents, 0, domContents, 1, contents.length);
+        page.setBottomMargin(true);
         return getPage(page, ctx, additionalHeaderTags, domContents);
     }
 

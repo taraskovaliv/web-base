@@ -24,7 +24,7 @@ public class Messages {
         ctx.sessionAttribute("messages", gson().toJson(messages));
     }
 
-    private static @NotNull DomContent[] getMessagesContent(Context ctx) {
+    public static @NotNull DomContent[] getMessagesContent(Context ctx) {
         Map<MessageType, List<String>> messages = parseMessages(ctx);
         DomContent[] content = new DomContent[messages.isEmpty() ? 0 : 1];
         if (!messages.isEmpty()) {
