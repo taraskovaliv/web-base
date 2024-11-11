@@ -257,6 +257,14 @@ public class Base {
         }
     }
 
+    public static DomContent[] content(DomContent[]... contents) {
+        List<DomContent> content = new ArrayList<>();
+        for (DomContent[] domContents : contents) {
+            Collections.addAll(content, domContents);
+        }
+        return content.toArray(DomContent[]::new);
+    }
+
     public static @NotNull String getLang(Context context) {
         String lang = context.queryParam("lang");
         if (lang == null) {
