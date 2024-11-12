@@ -104,7 +104,7 @@ public class Base {
             return userValidation.isAuthenticated(ctx);
         }
 
-        private static boolean isMobile(Context ctx) {
+        public static boolean isMobile(Context ctx) {
             boolean isMobile = "?1".equals(ctx.header("sec-ch-ua"));
             if (!isMobile) {
                 List<String> mobileAgents = List.of("android", "webos", "iphone", "ipad", "ipod", "blackberry", "mobile", "opera mini");
