@@ -37,7 +37,6 @@
         init_bg_video();
         init_shortcodes();
         init_tooltips();
-        init_masonry();
     });
 
     $(window).resize(function () {
@@ -777,12 +776,7 @@ const work_grid = $("#work-grid, #isotope");
 function initWorkFilter() {
     (function ($) {
         "use strict";
-        let isotope_mode;
-        if (work_grid.hasClass("masonry")) {
-            isotope_mode = "masonry";
-        } else {
-            isotope_mode = "fitRows"
-        }
+        let isotope_mode = "fitRows"
 
         $(".filter").click(function () {
             $(".filter").removeClass("active").attr("aria-pressed", "false");
@@ -841,21 +835,6 @@ function initWorkFilter() {
                 filter: fselector
             });
         });
-
-        // Lazy loading plus isotope filter
-        $(".img-lazy-work").on("load", function () {
-            masonry_update();
-        });
-
-        function masonry_update() {
-            work_grid.imagesLoaded(function () {
-                work_grid.isotope({
-                    itemSelector: ".mix",
-                    layoutMode: isotope_mode,
-                    filter: fselector
-                });
-            });
-        }
 
         work_grid.on("arrangeComplete", function () {
             $(window).trigger("scroll");
@@ -961,18 +940,6 @@ function init_wow() {
         } else {
             $(".wow-menubar").css("opacity", "1");
         }
-    })(jQuery);
-}
-
-
-/* ---------------------------------------------
- Masonry
- --------------------------------------------- */
-function init_masonry() {
-    (function ($) {
-        $(".masonry").imagesLoaded(function () {
-            $(".masonry").masonry();
-        });
     })(jQuery);
 }
 

@@ -164,7 +164,6 @@ public class Base {
                 script().withSrc("/js/owl.carousel.min.js"),
                 script().withSrc("/js/isotope.pkgd.min.js"),
                 script().withSrc("/js/imagesloaded.pkgd.min.js"),
-                script().withSrc("/js/masonry.pkgd.min.js"),
                 script().withSrc("/js/jquery.lazyload.min.js"),
                 script().withSrc("/js/wow.min.js"),
                 script().withSrc("/js/morphext.js"),
