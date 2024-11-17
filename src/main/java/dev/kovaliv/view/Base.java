@@ -278,8 +278,8 @@ public class Base {
                     acceptLanguage.set(value);
                 }
             });
-            if (acceptLanguage.get() != null) {
-                lang = acceptLanguage.get().substring(0, 2);
+            if (acceptLanguage.get() != null && acceptLanguage.get().trim().length() >= 2) {
+                lang = acceptLanguage.get().trim().substring(0, 2);
             }
         }
         if (lang == null) {
