@@ -16,13 +16,15 @@ public class AdViews {
     }
 
     public static DomContent[] getWithAd(AdType type, DomContent... content) {
-        int length = content.length;
-        DomContent[] result = new DomContent[length + 3];
-        System.arraycopy(content, 0, result, 0, length);
-        result[length] = getGoogleAdScript();
-        result[length + 1] = getAd(type);
-        result[length + 2] = getPushAdScript();
-        return result;
+//        ADS DISABLED WHILE MODERATION NOT PASSED
+
+//        int length = content.length;
+//        DomContent[] result = new DomContent[length + 3];
+//        System.arraycopy(content, 0, result, 0, length);
+//        result[length] = getGoogleAdScript();
+//        result[length + 1] = getAd(type);
+//        result[length + 2] = getPushAdScript();
+        return content;
     }
 
     private static InsTag getAd(AdType type) {
