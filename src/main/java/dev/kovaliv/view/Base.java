@@ -394,6 +394,7 @@ public class Base {
                         ).withHref("https://link.kovaliv.dev/dronopad"),
                         a(button("MONO Банка")
                                 .withClasses("btn", "btn-mod", "btn-glass", "btn-round", "btn-medium")
+                                .withStyle("border: none")
                         ).withHref("https://link.kovaliv.dev/mono_dronopad")
                 ).withClasses("d-flex", "justify-content-around", "align-items-center")
         ).withStyle("background-color: #9f87e3; text-align: center; width: 100%");
