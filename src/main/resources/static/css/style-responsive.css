@@ -108,9 +108,13 @@
    ============================== */
 
 @media only screen and (max-width: 1024px) {
-    
+
     .main-nav,
-    .main-nav.small-height,
+    .main-nav.small-height {
+        height: 125px !important;
+        line-height: 55px !important;
+    }
+
     .nav-logo-wrap .logo,
     .nav-logo-wrap .logo.small-height,
     .mobile-cart,

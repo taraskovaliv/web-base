@@ -28,7 +28,7 @@ public class BasicPages {
                 ).withClasses("container", "relative")
         ).withClasses("page-section", "bg-dark", "light-content");
 
-        Base.Page page = new Base.Page(requireNonNullElse(title, "Успішно"), message, false, true, ctx);
+        Base.Page page = new Base.Page(requireNonNullElse(title, "Успішно"), message, false, ctx);
         return Base.getPage(page,
                 new Base.BasicHeader(title, message, new BackButton(back_path, back_text)),
                 ctx, content);
@@ -40,7 +40,7 @@ public class BasicPages {
         String back_path = ctx.sessionAttribute("back_path");
         String back_text = ctx.sessionAttribute("back_text");
 
-        Base.Page page = new Base.Page(requireNonNullElse(title, "Помилка"), error, false, true, ctx);
+        Base.Page page = new Base.Page(requireNonNullElse(title, "Помилка"), error, false, ctx);
         return Base.getPage(page,
                 new Base.BasicHeader(title, "Помилка: " + error, new BackButton(back_path, back_text)),
                 ctx, div().withClasses("page-section", "bg-dark", "light-content"));

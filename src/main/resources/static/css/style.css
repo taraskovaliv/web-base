@@ -1752,6 +1752,9 @@ a.logo:hover{
 .small-height{
     height: 65px !important;
 }
+.main-nav.small-height{
+    height: 120px !important;
+}
 .small-height .inner-nav ul li a,
 .mobile-cart.small-height{
     height: 65px !important;

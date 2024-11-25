@@ -69,15 +69,13 @@ public class Base {
         private final String title;
         private final String description;
         private final boolean showToTop;
-        private boolean bottomMargin;
         private final boolean isAuth;
         private final boolean isMobile;
 
-        public Page(String title, String description, boolean showToTop, boolean bottomMargin, Context ctx) {
+        public Page(String title, String description, boolean showToTop, Context ctx) {
             this.title = title;
             this.description = description;
             this.showToTop = showToTop;
-            this.bottomMargin = bottomMargin;
             this.isAuth = isAuth(ctx);
             this.isMobile = isMobile(ctx);
         }
@@ -86,7 +84,6 @@ public class Base {
             this.title = title;
             this.description = description;
             this.showToTop = false;
-            this.bottomMargin = false;
             this.isAuth = isAuth(ctx);
             this.isMobile = isMobile(ctx);
         }
@@ -95,7 +92,6 @@ public class Base {
             this.title = title;
             this.description = title;
             this.showToTop = false;
-            this.bottomMargin = false;
             this.isAuth = isAuth(ctx);
             this.isMobile = isMobile(ctx);
         }
@@ -355,7 +351,6 @@ public class Base {
                 .withStyle("padding:0")
                 .withId("home");
         System.arraycopy(contents, 0, domContents, 1, contents.length);
-        page.setBottomMargin(true);
         return getPage(page, ctx, additionalHeaderTags, domContents);
     }
 
@@ -364,11 +359,9 @@ public class Base {
         List<DomContent> contentList = new ArrayList<>();
         List<DomContent> content = new ArrayList<>();
         content.add(Nav.getNav(lang, page.isAuth));
-        DomContent[] contentsList = new DomContent[contents.length + (page.bottomMargin ? 1 : 0)];
-        if (page.bottomMargin) {
-            contentsList[0] = div().withClasses("small-section", "bg-dark-lighter");
-        }
-        System.arraycopy(contents, 0, contentsList, page.bottomMargin ? 1 : 0, contents.length);
+        DomContent[] contentsList = new DomContent[contents.length + 1];
+        contentsList[0] = div().withClasses("small-section", "bg-dark-lighter").withStyle("padding-top:100px");
+        System.arraycopy(contents, 0, contentsList, 1, contents.length);
         content.add(main(contentsList).withId("main"));
         content.add(getFooter(page.showToTop));
         contentList.add(getLoader(lang));
@@ -384,5 +377,25 @@ public class Base {
                 ).withClass("appear-animate")
                         .withStyle("background-color:rgb(35, 35, 35)")
         ).withLang(lang);
+    }
+
+    public static DivTag getSaveLiveBanner() {
+        return div(
+                div(
+                        a(img()
+                                .withSrc("/img/save-life-logo.svg")
+                                .withAlt("SaveLife - Повернись живим!")
+                                .withStyle("width: 97px;height: 48px")
+                        ).withHref("https://link.kovaliv.dev/savelife"),
+                        a(img()
+                                .withSrc("/img/dronopad.svg")
+                                .withAlt("Дронопад - Повернись живим!")
+                                .withStyle("max-width: 60%; max-height: 58px")
+                        ).withHref("https://link.kovaliv.dev/dronopad"),
+                        a(button("MONO Банка")
+                                .withClasses("btn", "btn-mod", "btn-glass", "btn-round", "btn-medium")
+                        ).withHref("https://link.kovaliv.dev/mono_dronopad")
+                ).withClasses("d-flex", "justify-content-around", "align-items-center")
+        ).withStyle("background-color: #9f87e3; text-align: center; width: 100%");
     }
 }

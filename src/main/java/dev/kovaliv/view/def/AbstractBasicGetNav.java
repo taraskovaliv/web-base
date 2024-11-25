@@ -1,5 +1,6 @@
 package dev.kovaliv.view.def;
 
+import dev.kovaliv.view.Base;
 import j2html.TagCreator;
 import j2html.tags.specialized.LiTag;
 import j2html.tags.specialized.NavTag;
@@ -8,7 +9,6 @@ import lombok.Getter;
 import java.util.Map;
 
 import static j2html.TagCreator.*;
-import static j2html.TagCreator.a;
 
 public abstract class AbstractBasicGetNav extends GetNav {
 
@@ -28,6 +28,7 @@ public abstract class AbstractBasicGetNav extends GetNav {
         }
         return TagCreator.nav(
                 div(
+                        Base.getSaveLiveBanner(),
                         div(
                                 a(
                                         img()
