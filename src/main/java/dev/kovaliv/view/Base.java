@@ -303,6 +303,7 @@ public class Base {
         ).withClasses("page-section", "bg-dark", "light-content");
     }
 
+    @Deprecated
     public static HtmlTag getPage(String title, DomContent content, Context ctx) {
         return getPage(new Page(title, ctx), ctx, getBasePageContainer(content));
     }

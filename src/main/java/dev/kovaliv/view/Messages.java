@@ -76,8 +76,7 @@ public class Messages {
                                 messagesDiv.toArray(DivTag[]::new)
                         ).withClass("row")
                 ).withClasses("container")
-        ).withClasses("small-section", "bg-dark", "light-content")
-                .withStyle("padding: 100px 0 0 0");
+        ).withClasses("small-section", "bg-dark", "light-content", "messages_block");
     }
 
     public enum MessageType {
