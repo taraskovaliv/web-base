@@ -296,11 +296,17 @@ public class Base {
     }
 
     public static SectionTag getBasePageContainer(DomContent... contents) {
-        return section(
-                div(
-                        div(contents).withClass("row")
-                ).withClasses("container", "relative")
-        ).withClasses("page-section", "bg-dark", "light-content");
+        return pageSection(div(
+                div(contents).withClass("row")
+        ).withClasses("container", "relative"));
+    }
+
+    public static SectionTag pageSection(DomContent... dc) {
+        return section(dc).withClasses("page-section", "bg-dark", "light-content");
+    }
+
+    public static SectionTag smallSection(DomContent... dc) {
+        return section(dc).withClasses("small-section", "bg-dark", "light-content");
     }
 
     @Deprecated

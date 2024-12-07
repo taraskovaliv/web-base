@@ -2,15 +2,16 @@ package dev.kovaliv.view;
 
 import io.javalin.http.Context;
 import j2html.tags.DomContent;
-import j2html.tags.specialized.DivTag;
 import j2html.tags.specialized.HtmlTag;
 import j2html.tags.specialized.PTag;
+import j2html.tags.specialized.SectionTag;
 import j2html.tags.specialized.SpanTag;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static dev.kovaliv.view.Base.pageSection;
 import static j2html.TagCreator.*;
 import static java.util.Objects.requireNonNullElse;
 
@@ -23,10 +24,9 @@ public class BasicPages {
         String back_path = ctx.sessionAttribute("back_path");
         String back_text = ctx.sessionAttribute("back_text");
 
-        DivTag content = div(div(
-                        getDescription(description)
-                ).withClasses("container", "relative")
-        ).withClasses("page-section", "bg-dark", "light-content");
+        SectionTag content = pageSection(div(
+                getDescription(description)
+        ).withClasses("container", "relative"));
 
         Base.Page page = new Base.Page(requireNonNullElse(title, "Успішно"), message, false, ctx);
         return Base.getPage(page,
@@ -43,7 +43,7 @@ public class BasicPages {
         Base.Page page = new Base.Page(requireNonNullElse(title, "Помилка"), error, false, ctx);
         return Base.getPage(page,
                 new Base.BasicHeader(title, "Помилка: " + error, new BackButton(back_path, back_text)),
-                ctx, div().withClasses("page-section", "bg-dark", "light-content"));
+                ctx, pageSection());
     }
 
     private static PTag getDescription(String text) {
