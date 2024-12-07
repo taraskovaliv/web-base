@@ -8,6 +8,7 @@ import cz.jiripinkas.jsitemapgenerator.robots.RobotsRule;
 import cz.jiripinkas.jsitemapgenerator.robots.RobotsTxtGenerator;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
+import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import java.io.FileNotFoundException;
@@ -28,6 +29,7 @@ import static java.lang.System.getenv;
 public abstract class AbstractSitemapService {
 
     @Scheduled(cron = "0 0 4 * * *")
+    @SchedulerLock(name = "sitemap-robots-txt-creation", lockAtMostFor = "PT60S")
     public void createSitemapAndRobotTxt() {
         createSitemap();
         createRobotTxt();
@@ -69,6 +71,10 @@ public abstract class AbstractSitemapService {
 
     private void createSitemapAndPing() throws IOException, URISyntaxException {
         String hostUri = getenv("HOST_URI");
+        if (hostUri == null || hostUri.isBlank()) {
+            return;
+        }
+
         SitemapGenerator sitemapGenerator = SitemapGenerator.of(hostUri)
                 .addPage(WebPage.builder().maxPriorityRoot().changeFreqNever().lastModNow().build());
         getImagePaths().forEach(path -> sitemapGenerator.addPage(WebPage.builder()

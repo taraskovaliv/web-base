@@ -13,7 +13,7 @@ import static dev.kovaliv.config.ContextConfig.env;
 @Profile(SLACK_PROFILE)
 @Service
 public class SlackService {
-
+    public final static String EXCEPTIONS_CHANNEL = "exceptions";
     private final MethodsClient slackClient = Slack.getInstance().methods();
 
     @SneakyThrows
