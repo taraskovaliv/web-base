@@ -9,11 +9,20 @@ import java.util.Arrays;
 
 import static dev.kovaliv.view.Base.getHtml;
 import static io.javalin.http.HttpStatus.NOT_ACCEPTABLE;
+import static j2html.TagCreator.script;
 
 public class TwinsparkBase {
 
+    private static final String SCRIPT_URL = "https://storage.kovaliv.dev/twinspark.min.js";
+
     public static ScriptTag twinsparkJs() {
-        return new ScriptTag().withSrc("https://storage.kovaliv.dev/twinspark.min.js");
+        return script().withSrc(SCRIPT_URL);
+    }
+
+    public static ScriptTag twinsparkJs(int timeout) {
+        return script()
+                .withSrc(SCRIPT_URL)
+                .attr("data-timeout", String.valueOf(timeout));
     }
 
     public static void render(Context ctx, Pair pair) {
