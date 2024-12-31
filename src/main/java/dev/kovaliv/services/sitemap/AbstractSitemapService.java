@@ -3,7 +3,6 @@ package dev.kovaliv.services.sitemap;
 import cz.jiripinkas.jsitemapgenerator.ChangeFreq;
 import cz.jiripinkas.jsitemapgenerator.Ping;
 import cz.jiripinkas.jsitemapgenerator.WebPage;
-import cz.jiripinkas.jsitemapgenerator.generator.SitemapGenerator;
 import cz.jiripinkas.jsitemapgenerator.robots.RobotsRule;
 import cz.jiripinkas.jsitemapgenerator.robots.RobotsTxtGenerator;
 import lombok.Getter;
@@ -27,6 +26,8 @@ import static java.lang.System.getenv;
 
 @Log4j2
 public abstract class AbstractSitemapService {
+
+    public static final int MAX_SITEMAP_SIZE = 49999;
 
     @Scheduled(cron = "0 0 4 * * *")
     @SchedulerLock(name = "sitemap-robots-txt-creation", lockAtMostFor = "PT60S")
@@ -75,8 +76,8 @@ public abstract class AbstractSitemapService {
             return;
         }
 
-        SitemapGenerator sitemapGenerator = SitemapGenerator.of(hostUri)
-                .addPage(WebPage.builder().maxPriorityRoot().changeFreqNever().lastModNow().build());
+        ExtendedSitemapGenerator sitemapGenerator = ExtendedSitemapGenerator.of(hostUri);
+        sitemapGenerator.addPage(WebPage.builder().maxPriorityRoot().changeFreqNever().lastModNow().build());
         getImagePaths().forEach(path -> sitemapGenerator.addPage(WebPage.builder()
                 .name(path)
                 .priority(0.7)
@@ -85,6 +86,11 @@ public abstract class AbstractSitemapService {
                 .build()));
 
         for (Map.Entry<String, SMValue> smvalue : getUrls().entrySet()) {
+            if (sitemapGenerator.size() == MAX_SITEMAP_SIZE) {
+                log.warn("Sitemap size reached the limit: {}", MAX_SITEMAP_SIZE);
+                break;
+            }
+
             try {
                 String url = smvalue.getKey();
                 if (!url.startsWith(hostUri)) {
