@@ -127,7 +127,7 @@ public class Base {
         contents[0] = div(
                 div(
                         div(
-                                a("© Kovaliv 2024").withHref("https://kovaliv.dev")
+                                a("© Kovaliv 2025").withHref("https://kovaliv.dev")
                         ).withClass("footer-copy")
                 ).withClass("footer-text")
         ).withClass("container");
