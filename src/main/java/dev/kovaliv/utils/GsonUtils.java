@@ -20,8 +20,16 @@ public class GsonUtils {
 
     public static Gson gson() {
         if (gson == null) {
+            gson = gson(LOWER_CASE_WITH_DASHES);
+        }
+
+        return gson;
+    }
+
+    public static Gson gson(FieldNamingPolicy fieldNamingPolicy) {
+        if (gson == null) {
             gson = new GsonBuilder()
-                    .setFieldNamingPolicy(LOWER_CASE_WITH_DASHES)
+                    .setFieldNamingPolicy(fieldNamingPolicy)
                     .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeTypeAdapter())
                     .registerTypeAdapter(LocalDate.class, new LocalDateTypeAdapter())
                     .registerTypeAdapter(LocalTime.class, new LocalTimeTypeAdapter())
