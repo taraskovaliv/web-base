@@ -13,15 +13,21 @@ import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.Semaphore;
 
 import static java.lang.String.join;
 import static java.lang.System.getenv;
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Objects.requireNonNull;
 import static org.apache.hc.core5.http.io.support.ClassicRequestBuilder.get;
 
 @Log4j2
@@ -59,6 +65,38 @@ public class PlaywrightUtils {
         } finally {
             semaphore.release();
         }
+    }
+
+    public static byte[] getScreenshot(PlaywrightOptions options) throws IOException {
+        try {
+            semaphore.acquire();
+            CloseableHttpClient httpClient = HttpClientBuilder.create().disableAutomaticRetries().build();
+            CloseableHttpResponse response = httpClient.execute(get(PLAYWRIGHT_BASE_URL + "/screenshot" + options.getQuery()).build());
+            if (response.getCode() != 200) {
+                log.warn("Response screenshot for {} has code {}", options.getUrl(), response.getCode());
+                throw new RuntimeException("Empty response from Playwright code: " + response.getCode());
+            }
+            byte[] byteArray = EntityUtils.toByteArray(response.getEntity());
+            httpClient.close();
+            if (byteArray.length == 0) {
+                log.warn("Response screenshot is empty for {}", options.getUrl());
+                throw new RuntimeException("Empty response from Playwright");
+            }
+            return byteArray;
+        } catch (InterruptedException e) {
+            log.warn("Playwright semaphore interrupted", e);
+            throw new RuntimeException(e);
+        } finally {
+            semaphore.release();
+        }
+    }
+
+    public static File getScreenshotFile(PlaywrightOptions options) throws IOException {
+        byte[] screenshot = getScreenshot(options);
+        File file = new File("screenshot_" + new Random().nextInt() + ".png");
+        BufferedImage image = requireNonNull(ImageIO.read(new ByteArrayInputStream(screenshot)));
+        ImageIO.write(image, "png", file);
+        return file;
     }
 
     @Getter
