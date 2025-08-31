@@ -33,6 +33,9 @@ public abstract class AbstractApp extends AbstractRoute {
                 .get("/error", AbstractApp::error)
                 .get("/success", AbstractApp::success)
                 .get("/sitemap.xml", AbstractApp::sitemap)
+                .get("/sitemap-1.xml", ctx -> sitemap(ctx, 1))
+                .get("/sitemap-2.xml", ctx -> sitemap(ctx, 2))
+                .get("/sitemap-3.xml", ctx -> sitemap(ctx, 3))
                 .get("/robots.txt", AbstractApp::robotsTxt);
         addEndpoints(app);
         return app;
@@ -65,6 +68,17 @@ public abstract class AbstractApp extends AbstractRoute {
 
     @SneakyThrows
     private static void sitemap(Context ctx) {
+        ctx.result(Files.readAllBytes(Path.of("sitemap.xml")))
+                .contentType(ContentType.XML);
+    }
+
+    @SneakyThrows
+    private void sitemap(@NotNull Context ctx, int i) {
+        if (Files.exists(Path.of("sitemap-%d.xml".formatted(i)))) {
+            ctx.result(Files.readAllBytes(Path.of("sitemap-%d.xml".formatted(i))))
+                    .contentType(ContentType.XML);
+            return;
+        }
         ctx.result(Files.readAllBytes(Path.of("sitemap.xml")))
                 .contentType(ContentType.XML);
     }

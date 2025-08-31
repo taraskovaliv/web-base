@@ -58,7 +58,7 @@ public abstract class AbstractSitemapService {
 
     private void createRobotTxtFile() throws FileNotFoundException {
         RobotsTxtGenerator robotsTxtGenerator = RobotsTxtGenerator.of(getenv("HOST_URI"));
-        robotsTxtGenerator.addSitemap(getSitemapFilename());
+        robotsTxtGenerator.addSitemap(getSitemapFilename(0));
         robotsTxtGenerator.addRule(RobotsRule.builder().userAgentAll().allowAll().build());
         staticPathsRules().forEach(robotsTxtGenerator::addRule);
         disallowPaths().forEach(path -> robotsTxtGenerator.addRule(
@@ -76,9 +76,10 @@ public abstract class AbstractSitemapService {
             return;
         }
 
-        ExtendedSitemapGenerator sitemapGenerator = ExtendedSitemapGenerator.of(hostUri);
-        sitemapGenerator.addPage(WebPage.builder().maxPriorityRoot().changeFreqNever().lastModNow().build());
-        getImagePaths().forEach(path -> sitemapGenerator.addPage(WebPage.builder()
+        List<ExtendedSitemapGenerator> sitemapGenerators = new ArrayList<>();
+        sitemapGenerators.add(ExtendedSitemapGenerator.of(hostUri));
+        sitemapGenerators.getLast().addPage(WebPage.builder().maxPriorityRoot().changeFreqNever().lastModNow().build());
+        getImagePaths().forEach(path -> sitemapGenerators.getLast().addPage(WebPage.builder()
                 .name(path)
                 .priority(0.7)
                 .changeFreq(ChangeFreq.WEEKLY)
@@ -86,9 +87,8 @@ public abstract class AbstractSitemapService {
                 .build()));
 
         for (Map.Entry<String, SMValue> smvalue : getUrls().entrySet()) {
-            if (sitemapGenerator.size() == MAX_SITEMAP_SIZE) {
-                log.warn("Sitemap size reached the limit: {}", MAX_SITEMAP_SIZE);
-                break;
+            if (sitemapGenerators.getLast().size() == MAX_SITEMAP_SIZE) {
+                sitemapGenerators.add(ExtendedSitemapGenerator.of(hostUri));
             }
 
             try {
@@ -102,7 +102,7 @@ public abstract class AbstractSitemapService {
                 continue;
             }
 
-            sitemapGenerator.addPage(WebPage.builder()
+            sitemapGenerators.getLast().addPage(WebPage.builder()
                     .name(smvalue.getKey())
                     .priority(smvalue.getValue().getPriority())
                     .changeFreq(smvalue.getValue().getFreq())
@@ -110,13 +110,15 @@ public abstract class AbstractSitemapService {
                     .build());
         }
 
-        sitemapGenerator.toFile(Paths.get(getSitemapFilename()));
+        for (int i = 0; i < sitemapGenerators.size() - 1; i++) {
+            sitemapGenerators.getLast().toFile(Paths.get(getSitemapFilename(i)));
+        }
 
         new Thread(() -> {
             Ping ping = Ping.builder()
                     .engines(GOOGLE, BING)
                     .build();
-            sitemapGenerator
+            sitemapGenerators.getLast()
                     .ping(ping)
                     .callOnSuccess(() -> log.info("Pinged Google and Bing!"))
                     .catchOnFailure(e ->
@@ -131,8 +133,11 @@ public abstract class AbstractSitemapService {
         return new ArrayList<>();
     }
 
-    protected String getSitemapFilename() {
-        return "sitemap.xml";
+    protected String getSitemapFilename(int index) {
+        if (index <= 0) {
+            return "sitemap.xml";
+        }
+        return "sitemap-%d.xml".formatted(index);
     }
 
     @Getter
