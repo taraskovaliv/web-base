@@ -74,13 +74,13 @@ public abstract class AbstractApp extends AbstractRoute {
 
     @SneakyThrows
     private void sitemap(@NotNull Context ctx, int i) {
-        if (Files.exists(Path.of("sitemap-%d.xml".formatted(i)))) {
-            ctx.result(Files.readAllBytes(Path.of("sitemap-%d.xml".formatted(i))))
+        Path path = Path.of("sitemap-%d.xml".formatted(i));
+        if (Files.exists(path)) {
+            ctx.result(Files.readAllBytes(path))
                     .contentType(ContentType.XML);
             return;
         }
-        ctx.result(Files.readAllBytes(Path.of("sitemap.xml")))
-                .contentType(ContentType.XML);
+        sitemap(ctx);
     }
 
     @SneakyThrows

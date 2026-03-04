@@ -37,23 +37,27 @@ public abstract class AbstractSitemapService {
     }
 
     public void createSitemap() {
-        try {
-            log.debug("Start creating sitemap");
-            createSitemapAndPing();
-            log.info("Sitemap created");
-        } catch (IOException | URISyntaxException e) {
-            log.warn("Error saving sitemap", e);
-        }
+        Thread.startVirtualThread(() -> {
+            try {
+                log.debug("Start creating sitemap");
+                createSitemapAndPing();
+                log.info("Sitemap created");
+            } catch (IOException | URISyntaxException e) {
+                log.warn("Error saving sitemap", e);
+            }
+        });
     }
 
     public void createRobotTxt() {
-        try {
-            log.debug("Start creating robots.txt");
-            createRobotTxtFile();
-            log.info("robots.txt created");
-        } catch (IOException e) {
-            log.warn("Error saving robots.txt", e);
-        }
+        Thread.startVirtualThread(() -> {
+            try {
+                log.debug("Start creating robots.txt");
+                createRobotTxtFile();
+                log.info("robots.txt created");
+            } catch (IOException e) {
+                log.warn("Error saving robots.txt", e);
+            }
+        });
     }
 
     private void createRobotTxtFile() throws FileNotFoundException {
@@ -111,7 +115,7 @@ public abstract class AbstractSitemapService {
         }
 
         for (int i = 0; i < sitemapGenerators.size() - 1; i++) {
-            sitemapGenerators.getLast().toFile(Paths.get(getSitemapFilename(i)));
+            sitemapGenerators.get(i).toFile(Paths.get(getSitemapFilename(i)));
         }
 
         new Thread(() -> {
